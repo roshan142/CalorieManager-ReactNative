@@ -4,6 +4,8 @@ import { Card, Button, Title, Paragraph } from 'react-native-paper';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+
 export default function HomeScreen({ navigation }) {
   const [meals, setMeals] = useState({
     breakfast: [],
@@ -180,7 +182,7 @@ export default function HomeScreen({ navigation }) {
             <Paragraph>Protein: {totals.protein}g</Paragraph>
             <Paragraph>Carbs: {totals.carbs}g</Paragraph>
             <Paragraph>Fats: {totals.fats}g</Paragraph>
-          </Card.Content>
+     </Card.Content>
         </Card>
       </View>
 
@@ -189,10 +191,9 @@ export default function HomeScreen({ navigation }) {
         {renderMealCard('lunch', 'Lunch')}
         {renderMealCard('snack', 'Snack')}
         {renderMealCard('dinner', 'Dinner')}
+        <Button mode="contained" onPress={() => savebutton()} buttonColor='green'>SAVE</Button>
       </View>
-      <View style={styles.save}>
-      <Button mode="contained" onPress={() => savebutton()}>Thats All?</Button>
-      </View>
+      
       <Card style={styles.card}>
         <Card.Content>
           <Title>Calories History</Title>
@@ -234,7 +235,6 @@ const styles = StyleSheet.create({
   },
   dateContainer: {
     padding: 16,
-    paddingTop: 30,
     alignItems: 'center',
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
@@ -265,9 +265,5 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 8,
     elevation: 4,
-  },
-  save:{
-    paddingBottom: 10,
-    paddingHorizontal: 50,
-  },
+  }
 });
