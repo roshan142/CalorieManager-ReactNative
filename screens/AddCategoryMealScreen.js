@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Appbar, Button, Card, List } from 'react-native-paper';
+import { Appbar, Button, Card, List,FAB } from 'react-native-paper';
 
 export default function AddCategoryMealScreen({ route, navigation }) {
   const [meals, setMeals] = useState([]);
@@ -31,6 +31,10 @@ export default function AddCategoryMealScreen({ route, navigation }) {
 
     fetchMeals();
     fetchCategoryMeals();
+    const intervalId = setInterval(fetchMeals, 100); // Set up interval to fetch data every 10 seconds
+  
+    return () => clearInterval(intervalId);
+    
   }, [category]);
 
   const isMealInCategory = (mealId) => {
@@ -92,6 +96,11 @@ export default function AddCategoryMealScreen({ route, navigation }) {
         )}
         keyExtractor={(item) => item.id.toString()}
       />
+      <FAB
+        icon="plus"
+        style={styles.fab}
+        onPress={() => navigation.navigate('AddMeal', "cat")}
+      />
 
       <Button mode="contained" onPress={handleSave} style={styles.doneButton}>
         Done
@@ -113,6 +122,13 @@ const styles = StyleSheet.create({
   },
   button: {
     marginRight: 10,
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 60,
+    backgroundColor: 'violet',
   },
   doneButton: {
     marginTop: 20,

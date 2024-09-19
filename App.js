@@ -7,6 +7,7 @@ import EditMealScreen from './screens/EditMealScreen';
 import ViewMealScreen from './screens/ViewMealScreen.js';
 import HistoryScreen from './screens/HistoryScreen.js';
 import AddCategoryMealScreen from './screens/AddCategoryMealScreen.js';
+import settings from './screens/settings.js';
 
 const Stack = createStackNavigator();
 
@@ -19,9 +20,10 @@ export default function App() {
 
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="ViewMeal" component={ViewMealScreen} />
-        <Stack.Screen name="AddMeal" component={AddMealScreen} />
+        <Stack.Screen name="AddMeal" component={AddMealScreen} initialParams={"back"} />
         <Stack.Screen name="EditMeal" component={EditMealScreen} />
         <Stack.Screen name="History" component={HistoryScreen} />
+        <Stack.Screen name="Settings" component={settings} />
         <Stack.Screen name="AddCategoryMealScreen" component={AddCategoryMealScreen} />
       </Stack.Navigator>
     </NavigationContainer>

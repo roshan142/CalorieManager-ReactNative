@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "CalorieManager",
+    "name": "CalorieWise",
     "slug": "CalorieManager",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,7 +19,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000"
       },
-      "package": "com.roshan_raja.CalorieManager"
+      "package": "com.roshan_raja.caloriewise"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, Alert } from 'react-native';
-import { Card, Button, Title, Paragraph, FAB } from 'react-native-paper';
+import { Card, Button, Title, Paragraph } from 'react-native-paper';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -26,14 +26,9 @@ export default function HomeScreen({ navigation }) {
         };
         setMeals(mealData);
         calculateTotals(mealData);
+
+        await removeInvalidMealsFromCategories();
   
-  
-        if (now.hour() === 23 && now.minute() === 50) {
-          saveDailyTotals();
-        }
-        if (now.hour() === 23 && now.minute() === 55) {
-          resetMeals();
-        }
   
       } catch (error) {
         Alert.alert('Error', 'Failed to load meals');
@@ -61,8 +56,43 @@ export default function HomeScreen({ navigation }) {
 
     setTotals(newTotals);
   };
+  const removeInvalidMealsFromCategories = async () => {
+    try {
+      // Fetch the main 'meals' object that contains all meals
+      const mainMealsJson = await AsyncStorage.getItem('meals');
+      const mainMeals = mainMealsJson ? JSON.parse(mainMealsJson) : [];
+  
+      // Create a Set of valid meal IDs from the main meals
+      const validMealIds = new Set(mainMeals.map(meal => meal.id));
+  
+      // List of meal categories (breakfast, lunch, snack, dinner)
+      const categories = ['breakfast', 'lunch', 'snack', 'dinner'];
+  
+      // Iterate over each category and filter out invalid meals
+      for (const category of categories) {
+        // Fetch the meals in this category from AsyncStorage
+        const categoryMealsJson = await AsyncStorage.getItem(`meals_${category}`);
+        const categoryMeals = categoryMealsJson ? JSON.parse(categoryMealsJson) : [];
+  
+        // Filter out meals from the category that do not exist in the main meals
+        const updatedCategoryMeals = categoryMeals.filter(meal => validMealIds.has(meal.id));
+  
+        // If there were changes, update the category in AsyncStorage
+        if (updatedCategoryMeals.length !== categoryMeals.length) {
+          await AsyncStorage.setItem(`meals_${category}`, JSON.stringify(updatedCategoryMeals));
+        }
+      }
+  
+    } catch (error) {
+      Alert.alert('Error', 'Failed to remove invalid meals from categories');
+    }
+  };
+  
 
-
+  const savebutton = () => {
+    saveDailyTotals();
+    resetMeals();
+  };
   const saveDailyTotals = async () => {
     try {
       const todayDate = moment().format('D MMM YYYY');
@@ -160,7 +190,9 @@ export default function HomeScreen({ navigation }) {
         {renderMealCard('snack', 'Snack')}
         {renderMealCard('dinner', 'Dinner')}
       </View>
-
+      <View style={styles.save}>
+      <Button mode="contained" onPress={() => savebutton()}>Thats All For Today??</Button>
+      </View>
       <Card style={styles.card}>
         <Card.Content>
           <Title>Calories History</Title>
@@ -182,6 +214,15 @@ export default function HomeScreen({ navigation }) {
           <Button mode="contained" onPress={() => navigation.navigate('AddMeal')} icon="plus">Add</Button>
         </Card.Actions>
       </Card>
+      <Card style={styles.card}>
+        <Card.Content>
+          <Title>Settings</Title>
+          <Paragraph>Settings for all</Paragraph>
+        </Card.Content>
+        <Card.Actions>
+        <Button mode="contained" onPress={() => navigation.navigate('Settings')} icon="">Open</Button>
+        </Card.Actions>
+      </Card>
     </ScrollView>
   );
 }
@@ -193,7 +234,7 @@ const styles = StyleSheet.create({
   },
   dateContainer: {
     padding: 16,
-    paddingTop: 50,
+    paddingTop: 30,
     alignItems: 'center',
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
@@ -224,5 +265,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 8,
     elevation: 4,
+  },
+  save:{
+    paddingBottom: 10,
+    paddingHorizontal: 90,
   },
 });

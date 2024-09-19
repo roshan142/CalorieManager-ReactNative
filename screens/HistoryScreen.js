@@ -11,7 +11,6 @@ export default function HistoryScreen({ navigation }) {
     const fetchHistory = async () => {
       try {
         const savedHistory = await AsyncStorage.getItem('mealHistory');
-        console.log(savedHistory)
         if (savedHistory) {
           const parsedHistory = JSON.parse(savedHistory);
           const aggregatedHistory = aggregateHistory(parsedHistory);

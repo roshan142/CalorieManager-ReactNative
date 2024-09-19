@@ -5,7 +5,8 @@ import { TextInput, Button, Card, Title, Paragraph,Appbar } from 'react-native-p
 
 const max = 10000;
 
-export default function AddMealScreen({ navigation }) {
+export default function AddMealScreen({ route,navigation }) {
+  const { from } = route.params;
   const [mealName, setMealName] = useState('');
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
@@ -38,10 +39,19 @@ export default function AddMealScreen({ navigation }) {
     }
   };
 
+  const fromtab = () =>{ 
+    if(from ==="cat"){
+      navigation.navigate('ViewMeal')
+    } else {
+      navigation.goBack()
+    }
+
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.BackAction onPress={() => fromtab()} />
         <Appbar.Content title="Go Back" />
       </Appbar.Header>
       
