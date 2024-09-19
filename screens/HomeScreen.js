@@ -191,7 +191,7 @@ export default function HomeScreen({ navigation }) {
         {renderMealCard('dinner', 'Dinner')}
       </View>
       <View style={styles.save}>
-      <Button mode="contained" onPress={() => savebutton()}>Thats All For Today??</Button>
+      <Button mode="contained" onPress={() => savebutton()}>Thats All?</Button>
       </View>
       <Card style={styles.card}>
         <Card.Content>
@@ -268,6 +268,6 @@ const styles = StyleSheet.create({
   },
   save:{
     paddingBottom: 10,
-    paddingHorizontal: 90,
+    paddingHorizontal: 50,
   },
 });
