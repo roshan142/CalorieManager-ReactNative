@@ -95,10 +95,10 @@ export default function EditMealScreen({ route, navigation }) {
 
           <Card.Actions style={styles.actions}>
             <Button mode="contained" onPress={updateMeal} style={styles.button}>
-              Update Meal
+              Update
             </Button>
             <Button mode="contained" onPress={deleteMeal} style={[styles.button, styles.deleteButton]}>
-              Delete Meal
+              Delete
             </Button>
           </Card.Actions>
         </Card>
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    marginHorizontal: 8,
+    marginHorizontal: 4,
   },
   deleteButton: {
     backgroundColor: 'red',

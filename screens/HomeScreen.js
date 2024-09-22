@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, Alert } from 'react-native';
-import { Card, Button, Title, Paragraph } from 'react-native-paper';
+import { Card, Button, Title, Paragraph, ProgressBar, Divider, Avatar } from 'react-native-paper';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
 
 export default function HomeScreen({ navigation }) {
   const [meals, setMeals] = useState({
@@ -14,11 +12,21 @@ export default function HomeScreen({ navigation }) {
     dinner: [],
   });
   const [totals, setTotals] = useState({ calories: 0, protein: 0, carbs: 0, fats: 0 });
+  const [userData, setUserData] = useState({ name: '', calories: 0, protein: 0, carbs: 0, fats: 0 });
 
   useEffect(() => {
+
+    const checkForStoredValue = async () => {
+      const storedValue = await AsyncStorage.getItem('userData');
+      if (!storedValue) {
+        navigation.navigate('Input');
+      }
+    };
+
+    
     const fetchMeals = async () => {
+      checkForStoredValue();
       try {
-        const now = moment();
         const savedMeals = await AsyncStorage.multiGet(['meals_breakfast', 'meals_lunch', 'meals_snack', 'meals_dinner']);
         const mealData = {
           breakfast: JSON.parse(savedMeals[0][1]) || [],
@@ -26,24 +34,32 @@ export default function HomeScreen({ navigation }) {
           snack: JSON.parse(savedMeals[2][1]) || [],
           dinner: JSON.parse(savedMeals[3][1]) || [],
         };
+    
         setMeals(mealData);
         calculateTotals(mealData);
 
+
+
+        const storedUserData = await AsyncStorage.getItem('userData');
+        if (storedUserData) {
+          const userData = JSON.parse(storedUserData);
+          setUserData(userData);
+        }
+        
         await removeInvalidMealsFromCategories();
   
-  
       } catch (error) {
-        Alert.alert('Error', 'Failed to load meals');
+        Alert.alert('Error', 'Failed to fetch meals');
       }
     };
+      
+    fetchMeals();
   
-    fetchMeals(); // Fetch data immediately on mount
+    const intervalId = setInterval(fetchMeals, 1000);
   
-    const intervalId = setInterval(fetchMeals, 1000); // Set up interval to fetch data every 10 seconds
-  
-    return () => clearInterval(intervalId); // Clean up interval on unmount
+    return () => clearInterval(intervalId);
   }, []);
-  
+
   const calculateTotals = (mealsData) => {
     const newTotals = { calories: 0, protein: 0, carbs: 0, fats: 0 };
 
@@ -58,28 +74,21 @@ export default function HomeScreen({ navigation }) {
 
     setTotals(newTotals);
   };
+
   const removeInvalidMealsFromCategories = async () => {
     try {
-      // Fetch the main 'meals' object that contains all meals
       const mainMealsJson = await AsyncStorage.getItem('meals');
       const mainMeals = mainMealsJson ? JSON.parse(mainMealsJson) : [];
   
-      // Create a Set of valid meal IDs from the main meals
       const validMealIds = new Set(mainMeals.map(meal => meal.id));
-  
-      // List of meal categories (breakfast, lunch, snack, dinner)
       const categories = ['breakfast', 'lunch', 'snack', 'dinner'];
   
-      // Iterate over each category and filter out invalid meals
       for (const category of categories) {
-        // Fetch the meals in this category from AsyncStorage
         const categoryMealsJson = await AsyncStorage.getItem(`meals_${category}`);
         const categoryMeals = categoryMealsJson ? JSON.parse(categoryMealsJson) : [];
   
-        // Filter out meals from the category that do not exist in the main meals
         const updatedCategoryMeals = categoryMeals.filter(meal => validMealIds.has(meal.id));
   
-        // If there were changes, update the category in AsyncStorage
         if (updatedCategoryMeals.length !== categoryMeals.length) {
           await AsyncStorage.setItem(`meals_${category}`, JSON.stringify(updatedCategoryMeals));
         }
@@ -90,11 +99,14 @@ export default function HomeScreen({ navigation }) {
     }
   };
   
-
   const savebutton = () => {
+    if (totals.calories === 0 || totals.protein === 0 || totals.carbs === 0 || totals.fats === 0) {
+      return;
+    }
     saveDailyTotals();
     resetMeals();
   };
+
   const saveDailyTotals = async () => {
     try {
       const todayDate = moment().format('D MMM YYYY');
@@ -125,19 +137,8 @@ export default function HomeScreen({ navigation }) {
 
   const resetMeals = async () => {
     try {
-      await AsyncStorage.multiRemove([
-        'meals_breakfast',
-        'meals_lunch',
-        'meals_snack',
-        'meals_dinner',
-      ]);
-
-      setMeals({
-        breakfast: [],
-        lunch: [],
-        snack: [],
-        dinner: [],
-      });
+      await AsyncStorage.multiRemove(['meals_breakfast', 'meals_lunch', 'meals_snack', 'meals_dinner']);
+      setMeals({ breakfast: [], lunch: [], snack: [], dinner: [] });
       setTotals({ calories: 0, protein: 0, carbs: 0, fats: 0 });
 
     } catch (error) {
@@ -148,82 +149,83 @@ export default function HomeScreen({ navigation }) {
   const renderMealCard = (mealType, title) => (
     <Card style={styles.mealCard} key={mealType}>
       <Card.Content>
-        <Title>{title}</Title>
+        <Title style={styles.mealTitle}>{title}</Title>
         {(meals[mealType] || []).length > 0 ? (
           (meals[mealType] || []).map((meal, index) => (
-            <Paragraph key={index}>
+            <Paragraph key={index} style={styles.mealText}>
               {meal.name} - Calories: {meal.calories}, Protein: {meal.protein}g, Carbs: {meal.carbs}g, Fats: {meal.fats}g 
             </Paragraph>
           ))
         ) : (
-          <Paragraph>No meals added</Paragraph>
+          <Paragraph style={styles.noMealsText}>No meals added</Paragraph>
         )}
       </Card.Content>
-      <Card.Actions>
-      <Button mode="outlined" onPress={() => AsyncStorage.removeItem(`meals_${mealType}`)}>Clear</Button>
-        <Button mode="contained" onPress={() => navigation.navigate('AddCategoryMealScreen', { category: mealType })}>
-          Add Meal
-        </Button>
+      <Card.Actions style={styles.cardActions}>
+        <Button mode="outlined" onPress={() => AsyncStorage.removeItem(`meals_${mealType}`)}>Clear</Button>
+        <Button mode="contained" onPress={() => navigation.navigate('AddCategoryMealScreen', { category: mealType })} icon="plus-circle">Add Meal</Button>
       </Card.Actions>
     </Card>
   );
 
+  const calorie_progress = userData.calories ? totals.calories / userData.calories : 0;
+  const protein_progress = userData.protein ? totals.protein / userData.protein : 0;
+  const carbs_progress = userData.carbs ? totals.carbs / userData.carbs : 0;
+  const fats_progress = userData.fats ? totals.fats / userData.fats : 0;
+  const todayDate = moment().format('dddd, MMMM D, YYYY');
+  
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.dateContainer}>
-        <Text style={styles.dateText}>Today, {moment().format('D MMM YYYY')}</Text>
+      <View style={styles.greetingContainer}>
+        <Text style={styles.greetingText}>Hello, {userData.name}</Text>
       </View>
 
-      <View style={styles.totalsContainer}>
-        <Card style={styles.totalCard}>
-          <Card.Content>
-            <Title>Today's Total</Title>
-            <Paragraph>Calories: {totals.calories}</Paragraph>
-            <Paragraph>Protein: {totals.protein}g</Paragraph>
-            <Paragraph>Carbs: {totals.carbs}g</Paragraph>
-            <Paragraph>Fats: {totals.fats}g</Paragraph>
-     </Card.Content>
-        </Card>
-      </View>
+      <Card style={styles.overviewCard}>
+        <Card.Title
+          title="Today's Overview"
+          left={(props) => <Avatar.Icon {...props} icon="calendar-today" />}
+        />
+        <Card.Content>
+          <Divider style={styles.divider} />
+          <Title style={styles.overviewTitle}>Calorie and Nutrient Goals</Title>
+          <Text style={styles.dateText}>{todayDate}</Text>
+        </Card.Content>
+      </Card>
+
+      {['Calories', 'Protein', 'Carbs', 'Fats'].map((nutrient, index) => (
+        <View style={styles.progressBarContainer} key={index}>
+          <Text style={styles.progressTitle}>{nutrient}</Text>
+          <ProgressBar 
+            progress={nutrient === 'Calories' ? calorie_progress : nutrient === 'Protein' ? protein_progress : nutrient === 'Carbs' ? carbs_progress : fats_progress} 
+            color={totals[nutrient.toLowerCase()] > userData[nutrient.toLowerCase()] ? 'red' : 'green'}  
+            style={styles.progressBar}
+          />
+          <Text style={styles.progressText}>
+            {totals[nutrient.toLowerCase()]} / {userData[nutrient.toLowerCase()]} {nutrient} ({Math.round((nutrient === 'Calories' ? calorie_progress : nutrient === 'Protein' ? protein_progress : nutrient === 'Carbs' ? carbs_progress : fats_progress) * 100)}%)
+          </Text>
+        </View>
+      ))}
 
       <View style={styles.mealsContainer}>
         {renderMealCard('breakfast', 'Breakfast')}
         {renderMealCard('lunch', 'Lunch')}
         {renderMealCard('snack', 'Snack')}
         {renderMealCard('dinner', 'Dinner')}
-        <Button mode="contained" onPress={() => savebutton()} buttonColor='green'>SAVE</Button>
+        <Button mode="contained" onPress={savebutton} buttonColor='green' style={styles.saveButton}>SAVE</Button>
       </View>
       
-      <Card style={styles.card}>
-        <Card.Content>
-          <Title>Calories History</Title>
-          <Paragraph>See the history of everyday Macros</Paragraph>
-        </Card.Content>
-        <Card.Actions>
-        <Button mode="outlined" onPress={() => AsyncStorage.removeItem('mealHistory')}>Clear</Button>
-        <Button mode="contained" onPress={() => navigation.navigate('History')} icon="history">History</Button>
-        </Card.Actions>
-      </Card>
-
-      <Card style={styles.card}>
-        <Card.Content>
-          <Title>View Meals</Title>
-          <Paragraph>See the list of all your meals</Paragraph>
-        </Card.Content>
-        <Card.Actions>
-          <Button mode="outlined" onPress={() => navigation.navigate('ViewMeal')}>View</Button>
-          <Button mode="contained" onPress={() => navigation.navigate('AddMeal')} icon="plus">Add</Button>
-        </Card.Actions>
-      </Card>
-      <Card style={styles.card}>
-        <Card.Content>
-          <Title>Settings</Title>
-          <Paragraph>Settings for all</Paragraph>
-        </Card.Content>
-        <Card.Actions>
-        <Button mode="contained" onPress={() => navigation.navigate('Settings')} icon="">Open</Button>
-        </Card.Actions>
-      </Card>
+      {['Calories History', 'View Meals', 'Settings'].map((title, index) => (
+        <Card style={styles.card} key={index}>
+          <Card.Content>
+            <Title>{title}</Title>
+            <Paragraph>See the {title.toLowerCase()} for all your meals</Paragraph>
+          </Card.Content>
+          <Card.Actions>
+            <Button mode="contained" onPress={() => navigation.navigate(title === 'Calories History' ? 'History' : title === 'View Meals' ? 'ViewMeal' : 'Settings')} icon={title === 'Calories History' ? 'history' : title === 'View Meals' ? 'plus-circle' : 'cog'}>
+              {title === 'View Meals' ? 'Add' : 'Open'}
+            </Button>
+          </Card.Actions>
+        </Card>
+      ))}
     </ScrollView>
   );
 }
@@ -233,37 +235,84 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  dateContainer: {
-    padding: 16,
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#dddddd',
-  },
-  dateText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  totalsContainer: {
-    padding: 16,
-  },
-  totalCard: {
-    marginBottom: 16,
-    borderRadius: 8,
-    elevation: 4,
-  },
   mealsContainer: {
     paddingHorizontal: 16,
     paddingBottom: 16,
   },
   mealCard: {
     marginBottom: 16,
-    borderRadius: 8,
+    borderRadius: 10,
+    elevation: 4,
+    backgroundColor: '#ffffff',
+  },
+  mealTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  mealText: {
+    fontSize: 14,
+    marginVertical: 2,
+    color: '#333',
+  },
+  noMealsText: {
+    fontSize: 14,
+    color: '#999',
+  },
+  cardActions: {
+    justifyContent: 'space-between',
+  },
+  progressBarContainer: {
+    marginVertical: 10,
+    paddingHorizontal: 16,
+  },
+  progressBar: {
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#e0e0e0',
+  },
+  progressText: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 4,
+    color: '#333',
+  },
+  progressTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  greetingContainer: {
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#ffffff',
+    marginTop: 16,
+    borderRadius: 10,
+    elevation: 4,
+    marginHorizontal: 16,
+  },
+  greetingText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  overviewCard: {
+    margin: 16,
+    borderRadius: 10,
+    backgroundColor: '#f5f5f5',
     elevation: 4,
   },
-  card: {
-    marginBottom: 16,
-    borderRadius: 8,
-    elevation: 4,
-  }
+  overviewTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  divider: {
+    marginVertical: 8,
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#555',
+  },
+  saveButton: {
+    marginTop: 16,
+  },
 });
