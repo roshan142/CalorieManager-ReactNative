@@ -213,15 +213,15 @@ export default function HomeScreen({ navigation }) {
         <Button mode="contained" onPress={savebutton} buttonColor='green' style={styles.saveButton}>SAVE</Button>
       </View>
       
-      {['Calories History', 'View Meals', 'Settings'].map((title, index) => (
+      {['Overview','Calories History', 'View Meals', 'Settings'].map((title, index) => (
         <Card style={styles.card} key={index}>
           <Card.Content>
             <Title>{title}</Title>
             <Paragraph>See the {title.toLowerCase()} for all your meals</Paragraph>
           </Card.Content>
           <Card.Actions>
-            <Button mode="contained" onPress={() => navigation.navigate(title === 'Calories History' ? 'History' : title === 'View Meals' ? 'ViewMeal' : 'Settings')} icon={title === 'Calories History' ? 'history' : title === 'View Meals' ? 'plus-circle' : 'cog'}>
-              {title === 'View Meals' ? 'Add' : 'Open'}
+            <Button mode="contained" onPress={() => navigation.navigate(title === 'Calories History' ? 'History' : title === 'View Meals' ? 'ViewMeal' : title === 'Overview'?'Overview':'Settings')} icon={title === 'Calories History' ? 'history' : title === 'View Meals' ? 'plus-circle' : title ==='Overview'?'chart-line': 'cog'}>
+              {title === 'View Meals' ? 'Add' : title === 'Overview'?'View':'Open'}
             </Button>
           </Card.Actions>
         </Card>
@@ -233,7 +233,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
   },
   mealsContainer: {
     paddingHorizontal: 16,

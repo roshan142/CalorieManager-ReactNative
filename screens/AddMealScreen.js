@@ -49,7 +49,7 @@ export default function AddMealScreen({ route,navigation }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => fromtab()} />
         <Appbar.Content title="Go Back" />
@@ -109,10 +109,6 @@ export default function AddMealScreen({ route,navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
   card: {
     borderRadius: 8,
     elevation: 4,
