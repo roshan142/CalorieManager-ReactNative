@@ -126,10 +126,20 @@ export default function Setting({ navigation }) {
           />
         </Card.Content>
       </Card>
-
       <Button mode="contained" onPress={handleSave} style={styles.saveButton}>
         Save
       </Button>
+      <Card style={styles.card}>
+          <Card.Content>
+            <Title>History</Title>
+            <Text>See the History for all your meals</Text>
+          </Card.Content>
+          <Card.Actions>
+            <Button mode="contained" onPress={() => navigation.navigate('History')} icon={'history'}>
+              View
+            </Button>
+          </Card.Actions>
+        </Card>
 
       <Card style={styles.card}>
         <Card.Content>

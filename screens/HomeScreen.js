@@ -213,14 +213,14 @@ export default function HomeScreen({ navigation }) {
         <Button mode="contained" onPress={savebutton} buttonColor='green' style={styles.saveButton}>SAVE</Button>
       </View>
       
-      {['Overview','Calories History', 'View Meals', 'Settings'].map((title, index) => (
+      {['Overview', 'View Meals', 'Settings'].map((title, index) => (
         <Card style={styles.card} key={index}>
           <Card.Content>
             <Title>{title}</Title>
             <Paragraph>See the {title.toLowerCase()} for all your meals</Paragraph>
           </Card.Content>
           <Card.Actions>
-            <Button mode="contained" onPress={() => navigation.navigate(title === 'Calories History' ? 'History' : title === 'View Meals' ? 'ViewMeal' : title === 'Overview'?'Overview':'Settings')} icon={title === 'Calories History' ? 'history' : title === 'View Meals' ? 'plus-circle' : title ==='Overview'?'chart-line': 'cog'}>
+            <Button mode="contained" onPress={() => navigation.navigate(title === 'View Meals' ? 'ViewMeal' : title === 'Overview'?'Overview':'Settings')} icon={title === 'View Meals' ? 'plus-circle' : title ==='Overview'?'chart-line': 'cog'}>
               {title === 'View Meals' ? 'Add' : title === 'Overview'?'View':'Open'}
             </Button>
           </Card.Actions>
