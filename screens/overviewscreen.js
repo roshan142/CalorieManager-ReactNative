@@ -32,7 +32,6 @@ export default function Overview({ navigation }) {
           setTargetCarbs(parsedUserData.carbs);
         }
 
-        // Simulate a loading time of 2 seconds
         setTimeout(() => {
           setIsLoading(false);
         }, 1000);
