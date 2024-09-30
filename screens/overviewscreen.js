@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import { Appbar, Card, Divider, Subheading, useTheme } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarChart } from 'react-native-chart-kit';
@@ -12,31 +12,10 @@ export default function Overview({ navigation }) {
   const [targetFats, setTargetFats] = useState(0);
   const [targetCarbs, setTargetCarbs] = useState(0);
   const screenWidth = Dimensions.get('window').width;
-  const { colors } = useTheme(); // Utilize theme colors
+  const { colors } = useTheme();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-//       const addTestData = async () => {
-//     try {
-//       // Create test data for the past 7 days
-//       const testHistory = [];
-//       for (let i = 6; i >= 0; i--) {
-//         testHistory.push({
-//           date: moment().subtract(i, 'days').format('D MMM YYYY'), // Format the date
-//           calories: Math.floor(Math.random() * (2500 - 1500 + 1)) + 1500, // Random calories between 1500 and 2500
-//           protein: Math.floor(Math.random() * 100),
-//           carbs: Math.floor(Math.random() * 300),
-//           fats: Math.floor(Math.random() * 100),
-//         });
-//       }
-
-//       // Store the test data in AsyncStorage
-//       await AsyncStorage.setItem('mealHistory', JSON.stringify(testHistory));
-//       console.log('Test data saved successfully.');
-//     } catch (error) {
-//       console.error('Error saving test data:', error);
-//     }
-//   };
-//   addTestData()
     const fetchHistoryData = async () => {
       try {
         const storedHistory = await AsyncStorage.getItem('mealHistory');
@@ -52,6 +31,12 @@ export default function Overview({ navigation }) {
           setTargetFats(parsedUserData.fats);
           setTargetCarbs(parsedUserData.carbs);
         }
+
+        // Simulate a loading time of 2 seconds
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
+        
       } catch (error) {
         console.error('Error fetching history data:', error);
       }
@@ -92,6 +77,15 @@ export default function Overview({ navigation }) {
       target: targetCarbs,
     },
   ];
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -183,5 +177,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#757575',
     marginTop: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#757575',
   },
 });
