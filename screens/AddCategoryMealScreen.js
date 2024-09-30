@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Appbar, Button, Card, List,FAB } from 'react-native-paper';
+import { Appbar, Button, Card, List, FAB, Paragraph, useTheme } from 'react-native-paper';
 
 export default function AddCategoryMealScreen({ route, navigation }) {
   const [meals, setMeals] = useState([]);
   const [categoryMeals, setCategoryMeals] = useState([]);
-  const { category } = route.params || {}; // Extract category from params
+  const { category } = route.params || {}; 
+  const { colors } = useTheme();
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -31,10 +32,8 @@ export default function AddCategoryMealScreen({ route, navigation }) {
 
     fetchMeals();
     fetchCategoryMeals();
-    const intervalId = setInterval(fetchMeals, 100); // Set up interval to fetch data every 10 seconds
-  
+    const intervalId = setInterval(fetchMeals, 100);
     return () => clearInterval(intervalId);
-    
   }, [category]);
 
   const isMealInCategory = (mealId) => {
@@ -44,19 +43,12 @@ export default function AddCategoryMealScreen({ route, navigation }) {
   const handleMealToggle = async (meal) => {
     try {
       let updatedCategoryMeals = [...categoryMeals];
-      
       if (isMealInCategory(meal.id)) {
-        // Remove meal from category
         updatedCategoryMeals = updatedCategoryMeals.filter(m => m.id !== meal.id);
       } else {
-        // Add meal to category
         updatedCategoryMeals.push(meal);
       }
-      
-      // Update AsyncStorage
       await AsyncStorage.setItem(`meals_${category}`, JSON.stringify(updatedCategoryMeals));
-      
-      // Update local state
       setCategoryMeals(updatedCategoryMeals);
     } catch (error) {
       Alert.alert('Error', 'Failed to update meal in category');
@@ -64,7 +56,7 @@ export default function AddCategoryMealScreen({ route, navigation }) {
   };
 
   const handleSave = () => {
-    navigation.goBack(); // Navigate back to HomeScreen
+    navigation.goBack();
   };
 
   return (
@@ -79,23 +71,35 @@ export default function AddCategoryMealScreen({ route, navigation }) {
         renderItem={({ item }) => (
           <Card style={styles.mealCard}>
             <Card.Content>
-              <List.Item
-                title={item.name}
-                right={() => (
-                  <Button
-                    mode={isMealInCategory(item.id) ? "outlined" : "contained"}
-                    onPress={() => handleMealToggle(item)}
-                    style={styles.button}
-                  >
-                    {isMealInCategory(item.id) ? "Remove" : "Add"}
-                  </Button>
-                )}
-              />
+              <View style={styles.mealInfo}>
+                <Text style={styles.mealName}>{item.name}</Text>
+                <Paragraph style={styles.nutrientText}>Calories: {item.calories} cal</Paragraph>
+                <Paragraph style={styles.nutrientText}>Protein: {item.protein}g</Paragraph>
+                <Paragraph style={styles.nutrientText}>Carbs: {item.carbs}g</Paragraph>
+                <Paragraph style={styles.nutrientText}>Fats: {item.fats}g</Paragraph>
+              </View>
+              <Button
+                mode={isMealInCategory(item.id) ? "outlined" : "contained"}
+                onPress={() => handleMealToggle(item)}
+                style={[
+                  styles.toggleButton,
+                  {
+                    backgroundColor: isMealInCategory(item.id) ? colors.surface : colors.primary,
+                    borderColor: colors.primary,
+                  },
+                ]}
+                labelStyle={{
+                  color: isMealInCategory(item.id) ? colors.primary : colors.background,
+                }}
+              >
+                {isMealInCategory(item.id) ? "Remove" : "Add"}
+              </Button>
             </Card.Content>
           </Card>
         )}
         keyExtractor={(item) => item.id.toString()}
       />
+
       <FAB
         icon="plus"
         style={styles.fab}
@@ -112,25 +116,45 @@ export default function AddCategoryMealScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    padding: 16,
+    backgroundColor: '#f5f5f5',
   },
   mealCard: {
-    marginBottom: 16,
+    marginVertical: 8,
     borderRadius: 8,
     elevation: 4,
+    backgroundColor: '#fff',
   },
-  button: {
-    marginRight: 10,
+  mealInfo: {
+    marginBottom: 8,
+  },
+  mealName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  nutrientText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  toggleButton: {
+    alignSelf: 'flex-end',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    marginTop: 8,
   },
   fab: {
     position: 'absolute',
     margin: 16,
     right: 0,
-    bottom: 60,
+    bottom: 80,
     backgroundColor: 'violet',
   },
   doneButton: {
-    marginTop: 20,
+    marginTop: 16,
+    backgroundColor: '#6200ee',
+    paddingVertical: 8,
+    borderRadius: 25,
   },
 });

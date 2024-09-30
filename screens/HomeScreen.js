@@ -233,11 +233,17 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
   mealsContainer: {
     paddingHorizontal: 16,
     paddingBottom: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    marginHorizontal: 16,
+    marginTop: 8,
+    elevation: 4,
+    paddingVertical: 8,
   },
   mealCard: {
     marginBottom: 16,
@@ -248,6 +254,7 @@ const styles = StyleSheet.create({
   mealTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#333',
   },
   mealText: {
     fontSize: 14,
@@ -298,12 +305,14 @@ const styles = StyleSheet.create({
   overviewCard: {
     margin: 16,
     borderRadius: 10,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#ffffff',
     elevation: 4,
+    padding: 16,
   },
   overviewTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#333',
   },
   divider: {
     marginVertical: 8,
@@ -314,5 +323,9 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: 16,
+    backgroundColor: '#4CAF50',
+    padding: 8,
+    borderRadius: 8,
   },
 });
+
