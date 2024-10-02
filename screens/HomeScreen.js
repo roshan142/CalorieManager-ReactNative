@@ -175,75 +175,41 @@ export default function HomeScreen({ navigation }) {
   
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.greetingContainer}>
-        <Text style={styles.greetingText}>Hello, {userData.name}</Text>
-      </View>
-
       <Card style={styles.overviewCard}>
         <Card.Title
           title="Today's Overview"
           left={(props) => <Avatar.Icon {...props} icon="calendar-today" />}
         />
         <Card.Content>
-          <Divider style={styles.divider} />
           <Title style={styles.overviewTitle}>Calorie and Nutrient Goals</Title>
           <Text style={styles.dateText}>{todayDate}</Text>
+          <Divider style={styles.divider} />
+          {['Calories', 'Protein', 'Carbs', 'Fats'].map((nutrient, index) => (
+      <View style={styles.progressBarContainer} key={index}>
+        <Text style={styles.progressTitle}>{nutrient}</Text>
+        <ProgressBar 
+          progress={nutrient === 'Calories' ? calorie_progress : nutrient === 'Protein' ? protein_progress : nutrient === 'Carbs' ? carbs_progress : fats_progress} 
+          color={totals[nutrient.toLowerCase()] > userData[nutrient.toLowerCase()] ? 'red' : 'green'}  
+          style={styles.progressBar}
+        />
+        <Text style={styles.progressText}>
+          {totals[nutrient.toLowerCase()]} / {userData[nutrient.toLowerCase()]} {nutrient} 
+          ({Math.round((nutrient === 'Calories' ? calorie_progress : nutrient === 'Protein' ? protein_progress : nutrient === 'Carbs' ? carbs_progress : fats_progress) * 100)}%)
+        </Text>
+      </View>
+    ))}
         </Card.Content>
       </Card>
-
-      {['Calories', 'Protein', 'Carbs', 'Fats'].map((nutrient, index) => (
-        <View style={styles.progressBarContainer} key={index}>
-          <Text style={styles.progressTitle}>{nutrient}</Text>
-          <ProgressBar 
-            progress={nutrient === 'Calories' ? calorie_progress : nutrient === 'Protein' ? protein_progress : nutrient === 'Carbs' ? carbs_progress : fats_progress} 
-            color={totals[nutrient.toLowerCase()] > userData[nutrient.toLowerCase()] ? 'red' : 'green'}  
-            style={styles.progressBar}
-          />
-          <Text style={styles.progressText}>
-            {totals[nutrient.toLowerCase()]} / {userData[nutrient.toLowerCase()]} {nutrient} ({Math.round((nutrient === 'Calories' ? calorie_progress : nutrient === 'Protein' ? protein_progress : nutrient === 'Carbs' ? carbs_progress : fats_progress) * 100)}%)
-          </Text>
-        </View>
-      ))}
-
+      
       <View style={styles.mealsContainer}>
         {renderMealCard('breakfast', 'Breakfast')}
         {renderMealCard('lunch', 'Lunch')}
         {renderMealCard('snack', 'Snack')}
         {renderMealCard('dinner', 'Dinner')}
-        <Button mode="contained" onPress={savebutton} buttonColor='green' style={styles.saveButton} labelStyle={{fontSize:17}}>SAVE</Button>
+        <Button mode="contained" onPress={savebutton} buttonColor='green' style={styles.saveButton} labelStyle={{fontSize:17,fontWeight:"bold"}}>SAVE</Button>
       </View>
-      
-      {['Overview', 'View Meals', 'Settings'].map((title, index) => (
-  <Card style={[styles.improvedCard, styles.shadowEffect]} key={index}>
-    <Card.Content style={styles.cardContent}>
-      <View style={styles.iconContainer}>
-        <Avatar.Icon 
-          size={50}
-          icon={title === 'View Meals' ? 'food' : title === 'Overview' ? 'chart-line' : 'cog'}
-          
-        />
-      </View>
-      <View style={styles.textContainer}>
-        <Title style={styles.cardTitle}>{title}</Title>
-        <Paragraph style={styles.cardDescription}>
-          {title === 'Overview' ? 'Check your progress and meal history' 
-          : title === 'View Meals' ? 'View and manage your meals' 
-          : 'Adjust app settings and preferences'}
-        </Paragraph>
-      </View>
-    </Card.Content>
-    <Card.Actions style={styles.cardActions}>
-      <Button 
-        mode="contained" 
-        onPress={() => navigation.navigate(title === 'View Meals' ? 'ViewMeal' : title === 'Overview' ? 'WeeklyOverview' : 'Settings')} 
-        icon={title === 'View Meals' ? 'plus-circle' : title === 'Overview' ? 'chart-line' : 'cog'}
-        textColor="#fff"
-      >
-        {title === 'View Meals' ? 'Add' : title === 'Overview' ? 'Weekly' : 'Open'}
-      </Button>
-    </Card.Actions>
-  </Card>
-))}
+
+
     </ScrollView>
   );
 }
@@ -251,7 +217,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
   },
   mealsContainer: {
     paddingHorizontal: 16,
@@ -288,12 +254,11 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     marginVertical: 10,
-    paddingHorizontal: 16,
   },
-  progressBar: {
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#e0e0e0',
+  progressTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
   progressText: {
     fontSize: 14,
@@ -301,24 +266,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: '#333',
   },
-  progressTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  greetingContainer: {
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#ffffff',
-    marginTop: 16,
-    borderRadius: 10,
-    elevation: 4,
-    marginHorizontal: 16,
-  },
-  greetingText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
+  progressBar: {
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#e0e0e0',
   },
   overviewCard: {
     margin: 16,

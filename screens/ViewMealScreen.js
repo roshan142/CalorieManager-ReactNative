@@ -65,10 +65,6 @@ export default function ViewMealScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="View Meals" />
-      </Appbar.Header>
       <FlatList
         data={meals}
         renderItem={renderMeal}
@@ -79,7 +75,7 @@ export default function ViewMealScreen({ navigation }) {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => navigation.navigate('AddMeal')}
+        onPress={() => navigation.navigate('AddMeal','notu')}
       />
     </View>
   );
@@ -121,7 +117,7 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
-    backgroundColor: 'violet',
+    backgroundColor: 'grey',
   },
   deleteButton: {
     backgroundColor: 'red',

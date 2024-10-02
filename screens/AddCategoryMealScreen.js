@@ -149,11 +149,11 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 80,
-    backgroundColor: 'violet',
+    backgroundColor: 'grey',
   },
   doneButton: {
     marginTop: 16,
-    backgroundColor: '#6200ee',
+    backgroundColor: '#6750a5',
     paddingVertical: 8,
     borderRadius: 25,
   },

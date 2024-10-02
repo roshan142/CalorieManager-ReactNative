@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
-import { Appbar, Card, Divider, Subheading, useTheme } from 'react-native-paper';
+import { Card, Divider, Subheading, useTheme, Avatar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarChart } from 'react-native-chart-kit';
 import moment from 'moment';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function WeeklyOverview({ navigation }) {
+export default function Overview({ navigation }) {
   const [historyData, setHistoryData] = useState([]);
   const [targetCalories, setTargetCalories] = useState(0);
   const [targetProteins, setTargetProteins] = useState(0);
@@ -15,34 +16,35 @@ export default function WeeklyOverview({ navigation }) {
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchHistoryData = async () => {
-      try {
-        const storedHistory = await AsyncStorage.getItem('mealHistory');
-        const parsedHistory = storedHistory ? JSON.parse(storedHistory) : [];
-        const last7Days = parsedHistory.slice(-7);
-        setHistoryData(last7Days);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchHistoryData = async () => {
+        try {
+          const storedHistory = await AsyncStorage.getItem('mealHistory');
+          const parsedHistory = storedHistory ? JSON.parse(storedHistory) : [];
+          const last7Days = parsedHistory.slice(-7);
+          setHistoryData(last7Days);
 
-        const userData = await AsyncStorage.getItem('userData');
-        if (userData) {
-          const parsedUserData = JSON.parse(userData);
-          setTargetCalories(parsedUserData.calories);
-          setTargetProteins(parsedUserData.protein);
-          setTargetFats(parsedUserData.fats);
-          setTargetCarbs(parsedUserData.carbs);
+          const userData = await AsyncStorage.getItem('userData');
+          if (userData) {
+            const parsedUserData = JSON.parse(userData);
+            setTargetCalories(parsedUserData.calories);
+            setTargetProteins(parsedUserData.protein);
+            setTargetFats(parsedUserData.fats);
+            setTargetCarbs(parsedUserData.carbs);
+          }
+
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 500);
+        } catch (error) {
+          console.error('Error fetching history data:', error);
         }
+      };
 
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 500);
-        
-      } catch (error) {
-        console.error('Error fetching history data:', error);
-      }
-    };
-
-    fetchHistoryData();
-  }, []);
+      fetchHistoryData();
+    }, [])
+  );
 
   const labels = historyData.length > 0 ? historyData.map(entry => moment(entry.date, 'D MMM YYYY').format('ddd')) : [];
   const caloriesData = historyData.length > 0 ? historyData.map(entry => entry.calories) : [];
@@ -52,27 +54,27 @@ export default function WeeklyOverview({ navigation }) {
 
   const charts = [
     {
-      title: "Weekly Calorie Intake",
+      title: "Calorie Intake",
       data: caloriesData,
       color: 'rgba(0, 150, 136, 1)',
       target: targetCalories,
     },
     {
-      title: "Weekly Protein Intake",
+      title: "Protein Intake",
       data: proteinsData,
-      color: 'red',
+      color: 'rgba(255, 82, 82, 1)',
       target: targetProteins,
     },
     {
-      title: "Weekly Fats Intake",
+      title: "Fats Intake",
       data: fatsData,
-      color: 'blue',
+      color: 'rgba(30, 136, 229, 1)',
       target: targetFats,
     },
     {
-      title: "Weekly Carbs Intake",
+      title: "Carbs Intake",
       data: carbsData,
-      color: 'grey',
+      color: 'rgba(0, 188, 212, 1)',
       target: targetCarbs,
     },
   ];
@@ -88,10 +90,13 @@ export default function WeeklyOverview({ navigation }) {
 
   return (
     <ScrollView style={styles.container}>
-      <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Overview" />
-      </Appbar.Header>
+      <Card style={styles.overviewCard}>
+        <Card.Title
+          title="Weekly Overview"
+          titleStyle={styles.overviewTitle}
+          left={(props) => <Avatar.Icon {...props} icon="calendar-today" />}
+        />
+      </Card>
 
       {charts.map((chart, index) => (
         <Card key={index} style={styles.card}>
@@ -109,9 +114,9 @@ export default function WeeklyOverview({ navigation }) {
                   yAxisSuffix={chart.title.includes('Calories') ? ' cal' : ' g'}
                   fromZero
                   chartConfig={{
-                    backgroundColor: '#f5f5f5',
-                    backgroundGradientFrom: '#ffffff',
-                    backgroundGradientTo: '#e0f7fa',
+                    backgroundColor: '#ffffff',
+                    backgroundGradientFrom: '#e0f7fa',
+                    backgroundGradientTo: '#ffffff',
                     decimalPlaces: 0,
                     color: (opacity = 1) => chart.color,
                     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -119,11 +124,11 @@ export default function WeeklyOverview({ navigation }) {
                       borderRadius: 16,
                     },
                     propsForHorizontalLabels: {
-                      fontSize: 10,
+                      fontSize: 12,
                       color: '#00796b',
                     },
                     propsForVerticalLabels: {
-                      fontSize: 10,
+                      fontSize: 12,
                       color: '#00796b',
                     },
                   }}
@@ -131,7 +136,7 @@ export default function WeeklyOverview({ navigation }) {
                   showValuesOnTopOfBars
                   verticalLabelRotation={0}
                 />
-                <Divider style={{ marginVertical: 8 }} />
+                <Divider style={styles.divider} />
                 <Text style={styles.targetLabel}>{`Target: ${chart.target} ${chart.title.includes('Calories') ? 'cal' : 'g'}`}</Text>
               </>
             ) : (
@@ -150,10 +155,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
     padding: 16,
   },
+  overviewCard: {
+    marginBottom: 16,
+    borderRadius: 10,
+    backgroundColor: '#ffffff',
+    elevation: 4,
+    padding: 16,
+  },
+  overviewTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+  },
   card: {
     marginVertical: 10,
     borderRadius: 16,
     elevation: 4,
+    backgroundColor: '#ffffff',
   },
   title: {
     textAlign: 'center',
@@ -187,5 +205,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: '#757575',
+  },
+  divider: {
+    marginVertical: 8,
+    backgroundColor: '#e0e0e0',
   },
 });

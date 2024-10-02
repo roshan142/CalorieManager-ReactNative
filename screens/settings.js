@@ -72,11 +72,6 @@ export default function Setting({ navigation }) {
 
   return (
     <ScrollView style={styles.container}>
-      <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Settings" />
-      </Appbar.Header>
-
       <Card style={styles.card}>
         <Card.Content>
           <Title style={styles.sectionTitle}>Profile Information</Title>
@@ -143,8 +138,8 @@ export default function Setting({ navigation }) {
           />
         </Card.Content>
       </Card>
-      <Button mode="contained" onPress={handleSave} style={styles.saveButton}>
-        Save
+      <Button mode="contained" onPress={handleSave} style={styles.saveButton} labelStyle={{fontSize:17,fontWeight:"bold"}}>
+        SAVE
       </Button>
       <Card style={styles.card}>
           <Card.Content>
@@ -203,6 +198,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginHorizontal: 16,
     borderRadius: 8,
+    backgroundColor:"#4CAF50"
   },
   resetButton: {
     marginVertical: 10,
