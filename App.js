@@ -1,4 +1,4 @@
-import React,{ useState, useEffect } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
@@ -9,7 +9,7 @@ import HistoryScreen from './screens/HistoryScreen.js';
 import AddCategoryMealScreen from './screens/AddCategoryMealScreen.js';
 import settings from './screens/settings.js';
 import InputScreen from './screens/inputscreen.js';
-import overview from './screens/overviewscreen.js'
+import Weeklyoverview from './screens/weeklyoverviewscreen.js'
 
 const Stack = createStackNavigator();
 
@@ -30,7 +30,7 @@ export default function App() {
         <Stack.Screen name="Settings" component={settings} />
         <Stack.Screen name="Input" component={InputScreen} />
         <Stack.Screen name="AddCategoryMealScreen" component={AddCategoryMealScreen} />
-        <Stack.Screen name="Overview" component={overview} />
+        <Stack.Screen name="WeeklyOverview" component={Weeklyoverview} />
       </Stack.Navigator>
     </NavigationContainer>
   );

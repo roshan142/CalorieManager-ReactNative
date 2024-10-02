@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarChart } from 'react-native-chart-kit';
 import moment from 'moment';
 
-export default function Overview({ navigation }) {
+export default function WeeklyOverview({ navigation }) {
   const [historyData, setHistoryData] = useState([]);
   const [targetCalories, setTargetCalories] = useState(0);
   const [targetProteins, setTargetProteins] = useState(0);
@@ -34,7 +34,7 @@ export default function Overview({ navigation }) {
 
         setTimeout(() => {
           setIsLoading(false);
-        }, 1000);
+        }, 500);
         
       } catch (error) {
         console.error('Error fetching history data:', error);

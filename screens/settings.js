@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, ScrollView } from 'react-native';
-import { Button, TextInput, Card, Title, Appbar } from 'react-native-paper';
+import { View, Text, StyleSheet, Alert, ScrollView, ActivityIndicator  } from 'react-native';
+import { Button, TextInput, Card, Title, Appbar, useTheme  } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Setting({ navigation }) {
@@ -11,6 +11,9 @@ export default function Setting({ navigation }) {
   const [protein, setProtein] = useState('');
   const [carbs, setCarbs] = useState('');
   const [fats, setFats] = useState('');
+
+  const { colors } = useTheme();
+  const [isLoading, setIsLoading] = useState(true);
 
   const resetData = async () => {
     try {
@@ -34,6 +37,11 @@ export default function Setting({ navigation }) {
         setCarbs(userData.carbs ? String(userData.carbs) : '');
         setFats(userData.fats ? String(userData.fats) : '');
       }
+
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 100);
+
     };
     loadStoredData();
   }, []);
@@ -52,6 +60,15 @@ export default function Setting({ navigation }) {
     await AsyncStorage.setItem('userData', JSON.stringify(userData));
     Alert.alert('Success', 'Profile updated successfully');
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -191,5 +208,16 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     paddingVertical: 5,
     borderRadius: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#757575',
   },
 });

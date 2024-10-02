@@ -210,22 +210,40 @@ export default function HomeScreen({ navigation }) {
         {renderMealCard('lunch', 'Lunch')}
         {renderMealCard('snack', 'Snack')}
         {renderMealCard('dinner', 'Dinner')}
-        <Button mode="contained" onPress={savebutton} buttonColor='green' style={styles.saveButton}>SAVE</Button>
+        <Button mode="contained" onPress={savebutton} buttonColor='green' style={styles.saveButton} labelStyle={{fontSize:17}}>SAVE</Button>
       </View>
       
       {['Overview', 'View Meals', 'Settings'].map((title, index) => (
-        <Card style={styles.card} key={index}>
-          <Card.Content>
-            <Title>{title}</Title>
-            <Paragraph>See the {title.toLowerCase()} for all your meals</Paragraph>
-          </Card.Content>
-          <Card.Actions>
-            <Button mode="contained" onPress={() => navigation.navigate(title === 'View Meals' ? 'ViewMeal' : title === 'Overview'?'Overview':'Settings')} icon={title === 'View Meals' ? 'plus-circle' : title ==='Overview'?'chart-line': 'cog'}>
-              {title === 'View Meals' ? 'Add' : title === 'Overview'?'View':'Open'}
-            </Button>
-          </Card.Actions>
-        </Card>
-      ))}
+  <Card style={[styles.improvedCard, styles.shadowEffect]} key={index}>
+    <Card.Content style={styles.cardContent}>
+      <View style={styles.iconContainer}>
+        <Avatar.Icon 
+          size={50}
+          icon={title === 'View Meals' ? 'food' : title === 'Overview' ? 'chart-line' : 'cog'}
+          
+        />
+      </View>
+      <View style={styles.textContainer}>
+        <Title style={styles.cardTitle}>{title}</Title>
+        <Paragraph style={styles.cardDescription}>
+          {title === 'Overview' ? 'Check your progress and meal history' 
+          : title === 'View Meals' ? 'View and manage your meals' 
+          : 'Adjust app settings and preferences'}
+        </Paragraph>
+      </View>
+    </Card.Content>
+    <Card.Actions style={styles.cardActions}>
+      <Button 
+        mode="contained" 
+        onPress={() => navigation.navigate(title === 'View Meals' ? 'ViewMeal' : title === 'Overview' ? 'WeeklyOverview' : 'Settings')} 
+        icon={title === 'View Meals' ? 'plus-circle' : title === 'Overview' ? 'chart-line' : 'cog'}
+        textColor="#fff"
+      >
+        {title === 'View Meals' ? 'Add' : title === 'Overview' ? 'Weekly' : 'Open'}
+      </Button>
+    </Card.Actions>
+  </Card>
+))}
     </ScrollView>
   );
 }
@@ -326,6 +344,43 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
     padding: 8,
     borderRadius: 8,
+  },
+  improvedCard: {
+    margin: 16,
+    borderRadius: 12,
+    backgroundColor: '#ffffff',
+    elevation: 6,
+  },
+  shadowEffect: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  cardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  iconContainer: {
+    marginRight: 16,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: '#777',
+  },
+  cardActions: {
+    justifyContent: 'flex-end',
+    paddingHorizontal: 16,
+    paddingBottom: 8,
   },
 });
 
