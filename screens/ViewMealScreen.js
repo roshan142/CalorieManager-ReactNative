@@ -62,21 +62,27 @@ export default function ViewMealScreen({ navigation }) {
       </Card.Actions>
     </Card>
   );
-
+ 
   return (
     <View style={styles.container}>
-      <FlatList
+       {meals.length === 0 ? (
+          <Paragraph style={styles.title}>No Meals Available</Paragraph>
+        ) : (
+          <FlatList
         data={meals}
         renderItem={renderMeal}
         keyExtractor={(item) => item.id.toString()}
         ListHeaderComponent={<Title style={styles.title}>Total Meals: {meals.length}</Title>}
         contentContainerStyle={styles.list}
-      />
+      />  
+        )}
+
       <FAB
         icon="plus"
         style={styles.fab}
         onPress={() => navigation.navigate('AddMeal','notu')}
       />
+
     </View>
   );
 }
