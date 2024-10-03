@@ -14,6 +14,7 @@ import AddCategoryMealScreen from './screens/AddCategoryMealScreen.js';
 import SettingsScreen from './screens/settings.js';
 import InputScreen from './screens/inputscreen.js';
 import Overview from './screens/Overviewscreen.js';
+import Profile from './screens/profilescreen.js';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,6 +38,9 @@ const BottomTabNavigator = () => {
           else if (route.name === 'Meals') {
             iconName = 'fastfood';
           }
+          else if (route.name === 'Profile'){
+            iconName = 'account-circle'
+          }
 
           return <MaterialIcons name={iconName} size={size} color={color} />;
         },
@@ -54,6 +58,7 @@ const BottomTabNavigator = () => {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Overview" component={Overview} />
       <Tab.Screen name="Meals" component={ViewMealScreen} />
+      <Tab.Screen name="Profile" component={Profile} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
       
     </Tab.Navigator>

@@ -98,53 +98,53 @@ export default function Overview({ navigation }) {
         />
       </Card>
 
-      {charts.map((chart, index) => (
-        <Card key={index} style={styles.card}>
-          <Card.Content>
-            <Subheading style={[styles.title, { color: colors.primary }]}>{chart.title}</Subheading>
-            {historyData.length > 0 ? (
-              <>
-                <BarChart
-                  data={{
-                    labels,
-                    datasets: [{ data: chart.data, color: (opacity = 1) => chart.color }],
-                  }}
-                  width={screenWidth - 48}
-                  height={250}
-                  yAxisSuffix={chart.title.includes('Calories') ? ' cal' : ' g'}
-                  fromZero
-                  chartConfig={{
-                    backgroundColor: '#ffffff',
-                    backgroundGradientFrom: '#e0f7fa',
-                    backgroundGradientTo: '#ffffff',
-                    decimalPlaces: 0,
-                    color: (opacity = 1) => chart.color,
-                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    style: {
-                      borderRadius: 16,
-                    },
-                    propsForHorizontalLabels: {
-                      fontSize: 12,
-                      color: '#00796b',
-                    },
-                    propsForVerticalLabels: {
-                      fontSize: 12,
-                      color: '#00796b',
-                    },
-                  }}
-                  style={styles.chart}
-                  showValuesOnTopOfBars
-                  verticalLabelRotation={0}
-                />
-                <Divider style={styles.divider} />
-                <Text style={styles.targetLabel}>{`Target: ${chart.target} ${chart.title.includes('Calories') ? 'cal' : 'g'}`}</Text>
-              </>
-            ) : (
-              <Text style={styles.noDataText}>No Data Saved</Text>
-            )}
-          </Card.Content>
-        </Card>
-      ))}
+      {historyData.length === 0 ? (
+        <View style={styles.noDataOverlay}>
+          <Text style={styles.noDataOverlayText}>No Data Saved</Text>
+        </View>
+      ) : (
+        charts.map((chart, index) => (
+          <Card key={index} style={styles.card}>
+            <Card.Content>
+              <Subheading style={[styles.title, { color: colors.primary }]}>{chart.title}</Subheading>
+              <BarChart
+                data={{
+                  labels,
+                  datasets: [{ data: chart.data, color: (opacity = 1) => chart.color }],
+                }}
+                width={screenWidth - 48}
+                height={250}
+                yAxisSuffix={chart.title.includes('Calories') ? ' cal' : ' g'}
+                fromZero
+                chartConfig={{
+                  backgroundColor: '#ffffff',
+                  backgroundGradientFrom: '#e0f7fa',
+                  backgroundGradientTo: '#ffffff',
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => chart.color,
+                  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                  },
+                  propsForHorizontalLabels: {
+                    fontSize: 12,
+                    color: '#00796b',
+                  },
+                  propsForVerticalLabels: {
+                    fontSize: 12,
+                    color: '#00796b',
+                  },
+                }}
+                style={styles.chart}
+                showValuesOnTopOfBars
+                verticalLabelRotation={0}
+              />
+              <Divider style={styles.divider} />
+              <Text style={styles.targetLabel}>{`Target: ${chart.target} ${chart.title.includes('Calories') ? 'cal' : 'g'}`}</Text>
+            </Card.Content>
+          </Card>
+        ))
+      )}
     </ScrollView>
   );
 }
@@ -189,11 +189,17 @@ const styles = StyleSheet.create({
     color: '#d32f2f',
     fontWeight: 'bold',
   },
-  noDataText: {
-    textAlign: 'center',
-    fontSize: 14,
+  noDataOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+    marginTop: 20,
+  },
+  noDataOverlayText: {
+    fontSize: 18,
+    fontWeight: 'bold',
     color: '#757575',
-    marginTop: 10,
   },
   loadingContainer: {
     flex: 1,

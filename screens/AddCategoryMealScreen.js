@@ -66,39 +66,45 @@ export default function AddCategoryMealScreen({ route, navigation }) {
         <Appbar.Content title={`Manage ${category.charAt(0).toUpperCase() + category.slice(1)}`} />
       </Appbar.Header>
 
-      <FlatList
-        data={meals}
-        renderItem={({ item }) => (
-          <Card style={styles.mealCard}>
-            <Card.Content>
-              <View style={styles.mealInfo}>
-                <Text style={styles.mealName}>{item.name}</Text>
-                <Paragraph style={styles.nutrientText}>Calories: {item.calories} cal</Paragraph>
-                <Paragraph style={styles.nutrientText}>Protein: {item.protein}g</Paragraph>
-                <Paragraph style={styles.nutrientText}>Carbs: {item.carbs}g</Paragraph>
-                <Paragraph style={styles.nutrientText}>Fats: {item.fats}g</Paragraph>
-              </View>
-              <Button
-                mode={isMealInCategory(item.id) ? "outlined" : "contained"}
-                onPress={() => handleMealToggle(item)}
-                style={[
-                  styles.toggleButton,
-                  {
-                    backgroundColor: isMealInCategory(item.id) ? colors.surface : colors.primary,
-                    borderColor: colors.primary,
-                  },
-                ]}
-                labelStyle={{
-                  color: isMealInCategory(item.id) ? colors.primary : colors.background,
-                }}
-              >
-                {isMealInCategory(item.id) ? "Remove" : "Add"}
-              </Button>
-            </Card.Content>
-          </Card>
-        )}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      {meals.length === 0 ? (
+        <View style={styles.noDataContainer}>
+          <Text style={styles.noDataText}>No Meal Data Found</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={meals}
+          renderItem={({ item }) => (
+            <Card style={styles.mealCard}>
+              <Card.Content>
+                <View style={styles.mealInfo}>
+                  <Text style={styles.mealName}>{item.name}</Text>
+                  <Paragraph style={styles.nutrientText}>Calories: {item.calories} cal</Paragraph>
+                  <Paragraph style={styles.nutrientText}>Protein: {item.protein}g</Paragraph>
+                  <Paragraph style={styles.nutrientText}>Carbs: {item.carbs}g</Paragraph>
+                  <Paragraph style={styles.nutrientText}>Fats: {item.fats}g</Paragraph>
+                </View>
+                <Button
+                  mode={isMealInCategory(item.id) ? "outlined" : "contained"}
+                  onPress={() => handleMealToggle(item)}
+                  style={[
+                    styles.toggleButton,
+                    {
+                      backgroundColor: isMealInCategory(item.id) ? colors.surface : colors.primary,
+                      borderColor: colors.primary,
+                    },
+                  ]}
+                  labelStyle={{
+                    color: isMealInCategory(item.id) ? colors.primary : colors.background,
+                  }}
+                >
+                  {isMealInCategory(item.id) ? "Remove" : "Add"}
+                </Button>
+              </Card.Content>
+            </Card>
+          )}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      )}
 
       <FAB
         icon="plus"
@@ -156,5 +162,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#6750a5',
     paddingVertical: 8,
     borderRadius: 25,
+  },
+  noDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noDataText: {
+    fontSize: 18,
+    color: '#888',
   },
 });
