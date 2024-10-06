@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TextInput, Button, Appbar } from 'react-native-paper';
+import { TextInput, Button, Divider, useTheme } from 'react-native-paper';
 
 export default function InputScreen({ navigation }) {
   const [name, setName] = useState('');
@@ -12,13 +12,13 @@ export default function InputScreen({ navigation }) {
   const [carbs, setCarbs] = useState('');
   const [fats, setFats] = useState('');
 
-  // Check if input values are already saved in AsyncStorage
+  const { colors } = useTheme(); // Use theme for colors
+
   useEffect(() => {
     const checkStoredValue = async () => {
       try {
         const storedData = await AsyncStorage.getItem('userData');
         if (storedData) {
-          // If data exists, skip this screen and navigate to HomeScreen
           navigation.replace('Home');
         }
       } catch (error) {
@@ -28,9 +28,8 @@ export default function InputScreen({ navigation }) {
     checkStoredValue();
   }, []);
 
-  // Function to save input data
   const handleSave = async () => {
-    if (!name || !age || !weight || !calories || !protein || !carbs || !fats) {
+    if (!name || !age || !calories || !protein || !carbs || !fats) {
       Alert.alert('Missing Fields', 'Please fill out all fields');
       return;
     }
@@ -46,10 +45,7 @@ export default function InputScreen({ navigation }) {
     };
 
     try {
-      // Save user input data to AsyncStorage
       await AsyncStorage.setItem('userData', JSON.stringify(userData));
-
-      // Navigate to HomeScreen
       navigation.navigate('Home');
     } catch (error) {
       Alert.alert('Error', 'Failed to save data');
@@ -58,64 +54,72 @@ export default function InputScreen({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.label}>Tell Something About You!</Text>
-      <TextInput
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-        placeholder="Name"
-        mode="outlined"
-      />
-      <TextInput
-        style={styles.input}
-        value={age}
-        onChangeText={(text) => setAge(text.replace(/[^0-9]/g, ''))}
-        placeholder="Age"
-        keyboardType="numeric"
-        mode="outlined"
-      />
-      <TextInput
-        style={styles.input}
-        value={weight}
-        onChangeText={(text) => setWeight(text.replace(/[^0-9.]/g, ''))}
-        placeholder="Weight"
-        keyboardType="numeric"
-        mode="outlined"
-      />
-      <TextInput
-        style={styles.input}
-        value={calories}
-        onChangeText={(text) => setCalories(text.replace(/[^0-9]/g, ''))}
-        placeholder="Calorie"
-        keyboardType="numeric"
-        mode="outlined"
-      />
-      <TextInput
-        style={styles.input}
-        value={protein}
-        onChangeText={(text) => setProtein(text.replace(/[^0-9]/g, ''))}
-        placeholder="Protein"
-        keyboardType="numeric"
-        mode="outlined"
-      />
-      <TextInput
-        style={styles.input}
-        value={carbs}
-        onChangeText={(text) => setCarbs(text.replace(/[^0-9]/g, ''))}
-        placeholder="Carbs"
-        keyboardType="numeric"
-        mode="outlined"
-      />
-      <TextInput
-        style={styles.input}
-        value={fats}
-        onChangeText={(text) => setFats(text.replace(/[^0-9]/g, ''))}
-        placeholder="Fats"
-        keyboardType="numeric"
-        mode="outlined"
-      />
-      <Button mode="contained" onPress={handleSave} style={styles.button}>
-        Done
+      <Text style={styles.label}>Profile</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          label="Name"
+          value={name}
+          onChangeText={setName}
+          mode="outlined"
+          style={styles.input}
+        />
+        <TextInput
+          label="Age"
+          value={age}
+          onChangeText={(text) => setAge(text.replace(/[^0-9]/g, ''))}
+          keyboardType="numeric"
+          mode="outlined"
+          style={styles.input}
+        />
+        {/* <TextInput
+          label="Weight (kg)"
+          value={weight}
+          onChangeText={(text) => setWeight(text.replace(/[^0-9.]/g, ''))}
+          keyboardType="numeric"
+          mode="outlined"
+          style={styles.input}
+        /> */}
+        <Text style={styles.label}>Daily Macros Goals</Text>
+        <TextInput
+          label="Calorie (cal)"
+          value={calories}
+          onChangeText={(text) => setCalories(text.replace(/[^0-9]/g, ''))}
+          keyboardType="numeric"
+          mode="outlined"
+          style={styles.input}
+        />
+        <TextInput
+          label="Protein (g)"
+          value={protein}
+          onChangeText={(text) => setProtein(text.replace(/[^0-9]/g, ''))}
+          keyboardType="numeric"
+          mode="outlined"
+          style={styles.input}
+        />
+        <TextInput
+          label="Carbs (g)"
+          value={carbs}
+          onChangeText={(text) => setCarbs(text.replace(/[^0-9]/g, ''))}
+          keyboardType="numeric"
+          mode="outlined"
+          style={styles.input}
+        />
+        <TextInput
+          label="Fats (g)"
+          value={fats}
+          onChangeText={(text) => setFats(text.replace(/[^0-9]/g, ''))}
+          keyboardType="numeric"
+          mode="outlined"
+          style={styles.input}
+        />
+      </View>
+      <Button
+        mode="contained"
+        onPress={handleSave}
+        style={[styles.button, { backgroundColor: colors.primary }]}
+        contentStyle={styles.buttonContent}
+      >
+        Save & Continue
       </Button>
     </ScrollView>
   );
@@ -129,16 +133,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   label: {
-    fontSize: 22,
-    marginVertical: 15,
-    textAlign: 'center',
+    fontSize: 26,
+    marginVertical: 10,
+    textAlign: 'left',
     fontWeight: 'bold',
+    color: '#333',
+  },
+  inputContainer: {
+    marginTop: 0,
   },
   input: {
     marginBottom: 15,
   },
   button: {
-    marginTop: 20,
+    marginTop: 30,
+    borderRadius: 25,
+  },
+  buttonContent: {
     paddingVertical: 8,
+  },
+  divider: {
+    marginVertical: 8,
+    backgroundColor: '#e0e0e0',
   },
 });

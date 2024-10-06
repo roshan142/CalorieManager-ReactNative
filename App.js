@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons'; // For icons in the bottom tab
-import { TouchableOpacity } from 'react-native'; // For custom tab bar buttons
 
 import HomeScreen from './screens/HomeScreen';
 import AddMealScreen from './screens/AddMealScreen';
@@ -15,6 +14,7 @@ import SettingsScreen from './screens/settings.js';
 import InputScreen from './screens/inputscreen.js';
 import Overview from './screens/Overviewscreen.js';
 import Profile from './screens/profilescreen.js';
+import Developermode from './screens/Developermode.js'
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -79,6 +79,7 @@ export default function App() {
         <Stack.Screen name="History" component={HistoryScreen} />
         <Stack.Screen name="Input" component={InputScreen} />
         <Stack.Screen name="AddCategoryMealScreen" component={AddCategoryMealScreen} />
+        <Stack.Screen name="Developermode" component={Developermode} />
       </Stack.Navigator>
     </NavigationContainer>
   );

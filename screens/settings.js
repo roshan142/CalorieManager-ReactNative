@@ -47,6 +47,18 @@ export default function Setting({ navigation }) {
             </Button>
           </Card.Actions>
         </Card>
+
+        <Card style={styles.card}>
+          <Card.Content>
+            <Title>Dev</Title>
+            <Text>Use the Developer Mode</Text>
+          </Card.Content>
+          <Card.Actions>
+            <Button mode="contained" onPress={() => navigation.navigate('Developermode')} icon={'xml'}>
+              Open
+            </Button>
+          </Card.Actions>
+        </Card>
         
     </ScrollView>
   );

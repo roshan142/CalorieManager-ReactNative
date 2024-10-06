@@ -18,9 +18,9 @@ export default function ViewMealScreen({ navigation }) {
       }
     };
 
-  const intervalId = setInterval(fetchMeals, 100); // Set up interval to fetch data every 10 seconds
+  const intervalId = setInterval(fetchMeals, 100); 
   
-    return () => clearInterval(intervalId); // Clean up interval on unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   
@@ -65,14 +65,17 @@ export default function ViewMealScreen({ navigation }) {
  
   return (
     <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Title style={styles.title}>Total Meals: {meals.length}</Title>
+      </View>
+
        {meals.length === 0 ? (
-          <Paragraph style={styles.title}>No Meals Available</Paragraph>
+          <Paragraph style={styles.noMeals}>No Meals Available</Paragraph>
         ) : (
           <FlatList
         data={meals}
         renderItem={renderMeal}
         keyExtractor={(item) => item.id.toString()}
-        ListHeaderComponent={<Title style={styles.title}>Total Meals: {meals.length}</Title>}
         contentContainerStyle={styles.list}
       />  
         )}
@@ -92,12 +95,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f4f4f4',
   },
-  title: {
+  headerContainer: {
+    backgroundColor: '#fff',
     padding: 20,
+    elevation: 4,
+    marginBottom: 10,
+  },
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#333',
+  },
+  noMeals: {
+    fontSize: 18,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 20,
   },
   list: {
     paddingHorizontal: 16,
